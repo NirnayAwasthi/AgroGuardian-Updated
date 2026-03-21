@@ -1,0 +1,278 @@
+/* Footer.css — Elegant AgroGuardian Footer */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+.footer-wave {
+  line-height: 0;
+  overflow: hidden;
+  margin-bottom: -2px;
+  background: transparent;
+  position: relative;
+}
+.footer-wave svg {
+  display: block;
+  width: 100%;
+  height: 90px;
+  filter: drop-shadow(0 -4px 12px rgba(46, 125, 50, 0.25));
+}
+
+/* Animate the wave layers gently */
+.footer-wave svg path:nth-child(1) {
+  animation: waveShift1 8s ease-in-out infinite alternate;
+}
+.footer-wave svg path:nth-child(2) {
+  animation: waveShift2 6s ease-in-out infinite alternate;
+}
+
+@keyframes waveShift1 {
+  0%   { d: path("M0,60 C180,100 360,20 540,60 C720,100 900,20 1080,60 C1260,100 1380,40 1440,55 L1440,120 L0,120 Z"); }
+  100% { d: path("M0,50 C180,90 380,30 560,65 C740,95 920,15 1100,55 C1270,90 1390,35 1440,50 L1440,120 L0,120 Z"); }
+}
+@keyframes waveShift2 {
+  0%   { d: path("M0,75 C200,30 400,90 600,55 C800,20 1000,80 1200,50 C1320,32 1400,65 1440,70 L1440,120 L0,120 Z"); }
+  100% { d: path("M0,65 C220,40 420,85 620,50 C820,15 1020,75 1220,45 C1340,28 1410,60 1440,65 L1440,120 L0,120 Z"); }
+}
+
+.footer {
+  font-family: 'Poppins', sans-serif;
+  position: relative;
+  margin-top: 0;
+  background-color: #0f1f0f;
+}
+
+.footer-body {
+  background: linear-gradient(160deg, #0f1f0f 0%, #162916 40%, #0d1f0d 100%);
+  padding: 60px 0 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.footer-body::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(circle at 15% 50%, rgba(46,125,50,0.08) 0%, transparent 50%),
+    radial-gradient(circle at 85% 20%, rgba(102,187,106,0.06) 0%, transparent 40%);
+  pointer-events: none;
+}
+
+.footer-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 40px;
+  display: grid;
+  grid-template-columns: 1.6fr 1fr 1.2fr;
+  gap: 48px;
+  position: relative;
+  z-index: 1;
+}
+
+/* ─── Brand Logo ─── */
+.footer-logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+/* Real PNG logo — white bg blends into dark footer using mix-blend-mode */
+.footer-logo-img {
+  height: 100px;
+  width: 100px;
+  object-fit: contain;
+  border-radius: 12px;
+  mix-blend-mode: lighten;
+  filter: brightness(1.15) contrast(1.08) saturate(1.1);
+  transition: transform 0.3s ease;
+  flex-shrink: 0;
+}
+
+.footer-logo-img:hover {
+  transform: scale(1.08) rotate(-3deg);
+}
+
+.footer-brand-name {
+  font-size: 22px;
+  font-weight: 700;
+  color: #3adc40;
+  margin: 0;
+  letter-spacing: 0.3px;
+}
+
+.footer-tagline {
+  color: rgba(255,255,255,0.55);
+  font-size: 13.5px;
+  line-height: 1.75;
+  margin-bottom: 20px;
+  font-weight: 300;
+}
+
+.footer-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.footer-badge {
+  background: rgba(102,187,106,0.12);
+  border: 1px solid rgba(102,187,106,0.25);
+  color: #81c784;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 4px 12px;
+  border-radius: 20px;
+  letter-spacing: 0.3px;
+  transition: all 0.3s;
+}
+
+.footer-badge:hover {
+  background: rgba(102,187,106,0.22);
+  border-color: rgba(102,187,106,0.5);
+  transform: translateY(-2px);
+}
+
+/* ─── Column Titles ─── */
+.footer-col-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: #fff;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin: 0 0 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.footer-title-bar {
+  display: inline-block;
+  width: 3px;
+  height: 18px;
+  background: linear-gradient(180deg, #66bb6a, #2e7d32);
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+/* ─── Lists ─── */
+.footer-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.footer-list li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: rgba(255,255,255,0.6);
+  font-size: 13.5px;
+  font-weight: 400;
+  transition: color 0.2s;
+  cursor: default;
+}
+
+.footer-list li:hover { color: rgba(255,255,255,0.9); }
+
+.footer-list-icon { font-size: 15px; width: 20px; text-align: center; flex-shrink: 0; }
+
+.footer-link {
+  color: rgba(255,255,255,0.6);
+  text-decoration: none;
+  transition: color 0.2s;
+  word-break: break-all;
+  font-size: 13px;
+}
+.footer-link:hover { color: #81c784; }
+
+/* ─── Divider ─── */
+.footer-divider {
+  max-width: 1200px;
+  margin: 48px auto 0;
+  padding: 0 40px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(102,187,106,0.3), rgba(255,255,255,0.15), rgba(102,187,106,0.3), transparent);
+  position: relative;
+  z-index: 1;
+}
+
+/* ─── Bottom Bar ─── */
+.footer-bottom {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 28px 40px 36px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 20px;
+  position: relative;
+  z-index: 1;
+}
+
+.footer-bottom-left { display: flex; flex-direction: column; gap: 6px; }
+
+.footer-copyright { margin: 0; font-size: 13.5px; color: rgba(255,255,255,0.7); font-weight: 400; }
+.footer-copyright strong { color: #81c784; font-weight: 700; }
+.footer-rights { margin: 0; font-size: 12.5px; color: rgba(255,255,255,0.4); }
+
+.footer-links-row {
+  margin: 4px 0 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.footer-policy-link { color: rgba(255,255,255,0.4); text-decoration: none; font-size: 11.5px; transition: color 0.2s; }
+.footer-policy-link:hover { color: #81c784; }
+.footer-dot { color: rgba(255,255,255,0.25); font-size: 11px; }
+
+/* ─── Pyari Ju (Shri Radha Charan Kamal) ─── */
+.footer-pyariju-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+  animation: pyarijuBounce 2.5s ease-in-out infinite;
+}
+
+@keyframes pyarijuBounce {
+  0%, 100% { transform: translateY(0); }
+  40%       { transform: translateY(-8px); }
+  60%       { transform: translateY(-5px); }
+}
+
+.footer-pyariju-img {
+  width: 90px;
+  height: auto;
+  filter: drop-shadow(0 6px 16px rgba(255,182,193,0.35));
+  border-radius: 50%;
+  transition: transform 0.3s ease;
+}
+
+.footer-pyariju-img:hover {
+  transform: scale(1.15) rotate(-5deg);
+  filter: drop-shadow(0 8px 20px rgba(255,182,193,0.55));
+  animation: none;
+}
+
+.footer-pyariju-caption { margin: 0; font-size: 10.5px; color: rgba(255,255,255,0.35); letter-spacing: 0.3px; }
+
+/* ─── Responsive ─── */
+@media (max-width: 900px) {
+  .footer-container { grid-template-columns: 1fr 1fr; gap: 36px; }
+  .footer-brand     { grid-column: 1 / -1; }
+}
+
+@media (max-width: 600px) {
+  .footer-container { grid-template-columns: 1fr; padding: 0 20px; gap: 28px; }
+  .footer-bottom    { flex-direction: column; align-items: center; text-align: center; padding: 24px 20px 28px; gap: 24px; }
+  .footer-bottom-left { align-items: center; }
+  .footer-divider   { padding: 0 20px; }
+  .footer-badges    { justify-content: center; }
+  .footer-pyariju-img { width: 75px; }
+  .footer-logo-img  { height: 46px; width: 46px; }
+}
