@@ -39,6 +39,7 @@ function Navbar() {
       setEditMode(false);
       setSaveMsg("");
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [profileOpen]);
 
   const logout = async () => {

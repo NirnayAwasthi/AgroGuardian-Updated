@@ -331,6 +331,7 @@ export default function Crop() {
       }
     });
     return () => { map.remove(); mapInstance.current = null; };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [showMap, mapLoaded]);
 
   const placeMarker = (map, lng, lat) => {

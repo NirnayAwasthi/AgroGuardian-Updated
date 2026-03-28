@@ -12,7 +12,7 @@ body {
   overflow-x: hidden;
 }
 
-/* ── Full-screen farm background (set via inline style in Weather.js) ── */
+/* ── Full-screen farm background (weather-bg.jpg from public/) ── */
 .weather-page {
   min-height: 100vh;
   width: 100vw;
@@ -25,7 +25,7 @@ body {
   overflow-x: hidden;
 }
 
-/* Gradient overlay */
+/* Dark gradient overlay — added via <div className="weather-page-overlay"> in Weather.js */
 .weather-page-overlay {
   position: absolute;
   inset: 0;
