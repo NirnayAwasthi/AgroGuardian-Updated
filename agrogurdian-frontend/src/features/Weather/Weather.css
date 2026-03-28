@@ -12,21 +12,36 @@ body {
   overflow-x: hidden;
 }
 
-/* ── Full-screen farm background (weather-bg.jpg from public/) ── */
+/* ── Full-screen farm background (set via inline style in Weather.js) ── */
 .weather-page {
   min-height: 100vh;
   width: 100vw;
-  background:
-    linear-gradient(
-      to bottom,
-      rgba(0, 0, 0, 0.55) 0%,
-      rgba(10, 40, 10, 0.65) 60%,
-      rgba(0, 0, 0, 0.72) 100%
-    ),
-    url(D:\AgroGuardian\agrogurdian-frontend\public\crops-bg.gif) center center / cover no-repeat fixed;
-  padding: 0 0 60px 0;        /* no top pad — header handles it */
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  padding: 0 0 60px 0;
   position: relative;
   overflow-x: hidden;
+}
+
+/* Gradient overlay */
+.weather-page-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.55) 0%,
+    rgba(10, 40, 10, 0.65) 60%,
+    rgba(0, 0, 0, 0.72) 100%
+  );
+  pointer-events: none;
+  z-index: 0;
+}
+
+.weather-page > *:not(.weather-page-overlay) {
+  position: relative;
+  z-index: 1;
 }
 
 /* ── Header block ─────────────────────────────────────────────── */

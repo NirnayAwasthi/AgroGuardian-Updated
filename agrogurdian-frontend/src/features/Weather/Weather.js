@@ -259,7 +259,8 @@ function Weather() {
   const handleKeyDown = (e) => { if (e.key === "Enter") getWeather(); };
 
   return (
-    <div className="weather-page">
+    <div className="weather-page" style={{ backgroundImage: `url(${process.env.PUBLIC_URL}/crops-bg.gif)` }}>
+      <div className="weather-page-overlay" />
 
       {/* Header */}
       <div className="weather-header">
