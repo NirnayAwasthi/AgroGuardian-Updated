@@ -177,6 +177,98 @@
 .feature-card h4    { font-size: 16px; color: #1b5e20; margin: 0 0 10px; font-weight: 700; }
 .feature-card p     { font-size: 14px; color: #555; line-height: 1.7; margin: 0; }
 
+/* ── Features Farmer Row ── */
+.features-farmer-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 28px;
+  margin-top: 12px;
+}
+
+/* Each card */
+.ffc {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  width: 190px;
+  transition: transform 0.3s;
+}
+.ffc:hover { transform: translateY(-6px); }
+
+/* Circular image */
+.ffc-circle {
+  width: 160px;
+  height: 160px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 3px solid #a5d6a7;
+  box-shadow: 0 6px 20px rgba(46,125,50,0.15);
+  margin-bottom: 14px;
+  background: #e8f5e9;
+  flex-shrink: 0;
+}
+.ffc-circle img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top center;
+  display: block;
+}
+
+/* Tag pill */
+.ffc-tag {
+  background: linear-gradient(135deg, #2e7d32, #66bb6a);
+  color: white;
+  padding: 3px 12px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.4px;
+  margin-bottom: 10px;
+}
+
+/* Title */
+.ffc-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: #1b5e20;
+  margin: 0 0 8px;
+  line-height: 1.35;
+}
+
+/* Description */
+.ffc-desc {
+  font-size: 13px;
+  color: #555;
+  line-height: 1.65;
+  margin: 0;
+}
+
+@media (max-width: 768px) {
+  .features-farmer-row {
+    gap: 20px;
+  }
+  .ffc {
+    width: 145px;
+  }
+  .ffc-circle {
+    width: 120px;
+    height: 120px;
+  }
+}
+
+@media (max-width: 480px) {
+  .ffc {
+    width: 130px;
+  }
+  .ffc-circle {
+    width: 110px;
+    height: 110px;
+  }
+}
+
 /* ── Future Timeline ── */
 .about-future-intro { font-size: 16px; color: #555; margin-bottom: 36px; max-width: 600px; }
 

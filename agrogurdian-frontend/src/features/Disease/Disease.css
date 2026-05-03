@@ -1209,3 +1209,49 @@
     font-size: 1rem;
   }
 }
+
+/* ── Email send note & SMS button ── */
+.email-send-note {
+  font-size: 0.85rem;
+  color: rgba(200, 255, 200, 0.9);
+  text-align: center;
+  padding: 0.4rem 1rem;
+  background: rgba(76, 175, 80, 0.15);
+  border-radius: 8px;
+  border: 1px solid rgba(76, 175, 80, 0.3);
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.btn-sms {
+  background: linear-gradient(135deg, #1565c0, #0d3a7a);
+  color: #90caf9;
+  border: 2px solid #42a5f5;
+  font-size: 0.95rem;
+  padding: 0.8rem 2rem;
+  border-radius: 50px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: 'Poppins', sans-serif;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.btn-sms:hover {
+  background: linear-gradient(135deg, #1976d2, #1144a0);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(66, 165, 245, 0.4);
+  color: #bbdefb;
+}
+
+@media (max-width: 600px) {
+  .btn-sms {
+    width: 100%;
+    justify-content: center;
+  }
+  .email-send-note {
+    font-size: 0.78rem;
+  }
+}

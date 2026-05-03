@@ -1,6 +1,8 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import axios from "axios";
 import "./Disease.css";
+import { auth } from "../../firebase";
+import { onAuthStateChanged } from "firebase/auth";
 
 const API_BASE = "http://127.0.0.1:8000";
 
@@ -317,14 +319,14 @@ const generatePrescriptionPDF = async (result, treatmentInfo, fertilizerRec, lan
 
   // ── Disclaimer (FULL, properly sized) ────────────────────────────────────
   const discText = "This AI-generated prescription is for guidance only. Always consult a certified agronomist or agricultural extension officer before applying any chemical treatment. Dosage may vary based on local soil tests, crop variety and regional regulations. AgroGuardian is a decision-support tool and does not replace professional advice.";
-  const discLines = doc.splitTextToSize(discText, CW-12);
-  const discH = discLines.length*4.5+18;
+  const discLines = doc.splitTextToSize(discText, CW-14);
+  const discH = discLines.length*5.2+20;
   if(y+discH>H-25){doc.addPage();addBg();y=22;}
   rr(M, y, CW, discH, 3, [255,250,215], [200,155,0], 0.7);
   bg(200,155,0); doc.rect(M, y, 2.5, discH, "F");
-  fc(110,65,10); fnt("bold",9.5); doc.text("DISCLAIMER", M+5, y+9);
+  fc(110,65,10); fnt("bold",9.5); doc.text("DISCLAIMER", M+6, y+9);
   fnt("normal",8.5); fc(100,55,5);
-  doc.text(discLines, M+5, y+16);
+  doc.text(discLines, M+6, y+17);
   y+=discH+6;
 
   // ── Help box ──────────────────────────────────────────────────────────────
@@ -536,13 +538,18 @@ function Disease() {
   const [showCamera, setShowCamera]     = useState(false);
   const [error, setError]               = useState(null);
   const [pdfLoading, setPdfLoading]     = useState(false);
+  const [currentUser, setCurrentUser]   = useState(null);
   const videoRef  = useRef(null);
   const canvasRef = useRef(null);
   const fileInputRef = useRef(null);
 
   const t = translations[language];
 
-  // ── Camera functions ──────────────────────────────────────────────────────
+  // ── Get logged-in user ────────────────────────────────────────────────────
+  useEffect(() => {
+    const unsub = onAuthStateChanged(auth, (user) => setCurrentUser(user));
+    return unsub;
+  }, []);
   const startCamera = async () => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
@@ -614,6 +621,28 @@ function Disease() {
     setPdfLoading(true);
     try {
       await generatePrescriptionPDF(result, treatmentInfo, fertilizerRec, language, preview);
+
+      // ── Auto-send prescription to user's email via mailto ──
+      if (currentUser?.email) {
+        const subject = encodeURIComponent(`AgroGuardian Prescription: ${result.plant} - ${result.disease || "Healthy"}`);
+        const diseaseLine = result.isHealthy ? "Your crop is HEALTHY ✅" : `Disease Detected: ${result.disease}`;
+        const organicList = treatmentInfo?.organic?.join("\n  • ") || "N/A";
+        const chemList = treatmentInfo?.chemical?.join(", ") || "N/A";
+        const fertLine = fertilizerRec ? `Primary: ${fertilizerRec.shopName} | Dose: ${fertilizerRec.dose}` : "N/A";
+        const body = encodeURIComponent(
+          `AgroGuardian Plant Disease Prescription\n` +
+          `==========================================\n` +
+          `Plant: ${result.plant}\n` +
+          `${diseaseLine}\n` +
+          `Confidence: ${result.confidence?.toFixed(1)}%\n\n` +
+          `ORGANIC SOLUTIONS:\n  • ${organicList}\n\n` +
+          `CHEMICAL OPTIONS: ${chemList}\n\n` +
+          `FERTILIZER RECOMMENDATION:\n  ${fertLine}\n\n` +
+          `The detailed PDF prescription has been downloaded to your device.\n\n` +
+          `--\nAgroGuardian | Smart Farming Solutions\nKisan Helpline: 1800-180-1551`
+        );
+        window.open(`mailto:${currentUser.email}?subject=${subject}&body=${body}`, "_blank");
+      }
     } catch (e) {
       alert("PDF generation failed: " + e.message);
     } finally {
@@ -811,12 +840,31 @@ function Disease() {
                   {/* ── NEW: PDF Download Button ── */}
                   <div className="pdf-download-section">
                     <div className="pdf-note">📄 {t.pdfNote}</div>
+                    {currentUser?.email && (
+                      <div className="email-send-note">
+                        📧 Prescription will also be sent to: <strong>{currentUser.email}</strong>
+                      </div>
+                    )}
                     <button
                       className="btn btn-pdf"
                       onClick={handleDownloadPDF}
                       disabled={pdfLoading}
                     >
                       {pdfLoading ? <><span className="spinner spinner-dark"></span> {t.downloading}</> : t.downloadPDF}
+                    </button>
+                    {/* SMS button - sends disease info via text message */}
+                    <button
+                      className="btn btn-sms"
+                      onClick={() => {
+                        const diseaseLine = result.isHealthy ? "Crop is HEALTHY ✅" : `Disease: ${result.disease}`;
+                        const fertLine = fertilizerRec ? `Fertilizer: ${fertilizerRec.shopName}, Dose: ${fertilizerRec.dose}` : "";
+                        const msg = encodeURIComponent(
+                          `AgroGuardian Alert 🌾\nPlant: ${result.plant}\n${diseaseLine}\nConfidence: ${result.confidence?.toFixed(1)}%\n${fertLine}\nKisan Helpline: 1800-180-1551\n- Team AgroGuardian`
+                        );
+                        window.open(`sms:?body=${msg}`, "_blank");
+                      }}
+                    >
+                      📱 Send Info via SMS
                     </button>
                   </div>
 

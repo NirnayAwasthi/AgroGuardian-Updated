@@ -1,5 +1,4 @@
-import { useState } from "react";
-import axios from "axios";
+import { useState, useRef } from "react";
 import "./Weather.css";
 
 // ── Crop Recommendation Engine ────────────────────────────────────────────────
@@ -199,14 +198,35 @@ const getCropRecommendations = (weatherData, cityName) => {
   };
 };
 
+// ── Pick one representative slot per calendar day ─────────────────────────────
+// Prefers 12:00:00 but falls back to the first available slot for that date.
+// This fixes missing-day issues caused by timezone offsets.
+const pickDailySlots = (list) => {
+  const byDate = {};
+  list.forEach(item => {
+    const date = item.dt_txt.split(" ")[0]; // "2025-05-01"
+    if (!byDate[date]) byDate[date] = [];
+    byDate[date].push(item);
+  });
+  return Object.values(byDate)
+    .map(slots => slots.find(s => s.dt_txt.includes("12:00:00")) || slots[0])
+    .slice(0, 5);
+};
+
+// ── Simple in-memory cache (city → { data, coords, ts }) ─────────────────────
+const cache = {};
+const CACHE_TTL_MS = 10 * 60 * 1000; // 10 minutes
+
 // ── Component ─────────────────────────────────────────────────────────────────
 function Weather() {
-  const [city, setCity]         = useState("");
-  const [list, setList]         = useState([]);
-  const [loading, setLoading]   = useState(false);
-  const [error, setError]       = useState("");
-  const [cropRec, setCropRec]   = useState(null);
+  const [city, setCity]               = useState("");
+  const [list, setList]               = useState([]);
+  const [loading, setLoading]         = useState(false);
+  const [error, setError]             = useState("");
+  const [cropRec, setCropRec]         = useState(null);
   const [searchedCity, setSearchedCity] = useState("");
+  const [mapCoords, setMapCoords]     = useState({ lat: 26.8467, lon: 80.9462 });
+  const abortRef = useRef(null);
 
   const getWeatherIcon = (weatherMain) => {
     const icons = {
@@ -234,22 +254,66 @@ function Weather() {
   }[s] || s);
 
   const getWeather = async () => {
-    if (!city.trim()) { setError("Please enter a city name."); return; }
+    const trimmedCity = city.trim();
+    if (!trimmedCity) { setError("Please enter a city name."); return; }
+
+    // Cancel any in-flight request
+    if (abortRef.current) abortRef.current.abort();
+    abortRef.current = new AbortController();
+
+    // Return cached result instantly if fresh
+    const cacheKey = trimmedCity.toLowerCase();
+    const cached = cache[cacheKey];
+    if (cached && Date.now() - cached.ts < CACHE_TTL_MS) {
+      setList(cached.daily);
+      setSearchedCity(trimmedCity);
+      setCropRec(getCropRecommendations(cached.daily, trimmedCity));
+      setMapCoords(cached.coords);
+      setError("");
+      return;
+    }
+
     setLoading(true);
     setError("");
     setList([]);
     setCropRec(null);
 
+    const key = "0546b9c86b69c675937e44c4beec6dc7";
+
     try {
-      const key = "0546b9c86b69c675937e44c4beec6dc7";
-      const res = await axios.get(
-        `https://api.openweathermap.org/data/2.5/forecast?q=${city.trim()}&appid=${key}&units=metric`
-      );
-      const daily = res.data.list.filter(x => x.dt_txt.includes("12:00:00")).slice(0, 5);
+      // Run both API calls in parallel for speed
+      const [forecastRes, currentRes] = await Promise.all([
+        fetch(
+          `https://api.openweathermap.org/data/2.5/forecast?q=${encodeURIComponent(trimmedCity)}&appid=${key}&units=metric`,
+          { signal: abortRef.current.signal }
+        ),
+        fetch(
+          `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(trimmedCity)}&appid=${key}&units=metric`,
+          { signal: abortRef.current.signal }
+        ),
+      ]);
+
+      if (!forecastRes.ok) throw new Error("City not found");
+
+      const forecastJson = await forecastRes.json();
+      const currentJson  = currentRes.ok ? await currentRes.json() : null;
+
+      // Get coordinates from current weather (more reliable than forecast city block)
+      const coords = currentJson?.coord
+        ? { lat: currentJson.coord.lat, lon: currentJson.coord.lon }
+        : { lat: forecastJson.city.coord.lat, lon: forecastJson.city.coord.lon };
+
+      const daily = pickDailySlots(forecastJson.list);
+
+      // Store in cache
+      cache[cacheKey] = { daily, coords, ts: Date.now() };
+
       setList(daily);
-      setSearchedCity(city.trim());
-      setCropRec(getCropRecommendations(daily, city.trim()));
-    } catch {
+      setSearchedCity(trimmedCity);
+      setCropRec(getCropRecommendations(daily, trimmedCity));
+      setMapCoords(coords);
+    } catch (err) {
+      if (err.name === "AbortError") return; // User cancelled
       setError("City not found. Please check spelling and try again.");
     } finally {
       setLoading(false);
@@ -279,8 +343,29 @@ function Weather() {
         {error && <p className="error-msg">⚠️ {error}</p>}
       </div>
 
+      {/* Loading Skeleton */}
+      {loading && (
+        <div className="weather-grid">
+          {[...Array(5)].map((_, i) => (
+            <div key={i} className="weather-card skeleton-card" style={{ animationDelay: `${i * 0.08}s` }}>
+              <div className="skeleton skeleton-title" />
+              <div className="skeleton skeleton-icon" />
+              <div className="skeleton skeleton-temp" />
+              <div className="skeleton skeleton-desc" />
+              <div className="weather-details">
+                {[...Array(6)].map((__, j) => (
+                  <div key={j} className="detail-item">
+                    <div className="skeleton skeleton-detail" />
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
       {/* Weather Cards */}
-      {list.length > 0 && (
+      {!loading && list.length > 0 && (
         <div className="weather-grid">
           {list.map((d, i) => (
             <div key={i} className="weather-card" style={{ animationDelay: `${i * 0.1}s` }}>
@@ -369,14 +454,14 @@ function Weather() {
         </div>
       )}
 
-      {/* Weather Map */}
+      {/* Weather Map — coordinates update dynamically per searched city */}
       {list.length > 0 && (
         <div className="weather-map-section">
           <h3 className="map-header">🗺️ Real-Time Weather Map</h3>
           <div className="map-container">
             <iframe
               className="map-iframe"
-              src={`https://openweathermap.org/weathermap?basemap=map&cities=true&layer=temperature&lat=26.8467&lon=80.9462&zoom=6`}
+              src={`https://openweathermap.org/weathermap?basemap=map&cities=true&layer=temperature&lat=${mapCoords.lat}&lon=${mapCoords.lon}&zoom=6`}
               title="Weather Map"
               allowFullScreen
             />

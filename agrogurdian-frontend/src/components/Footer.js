@@ -56,22 +56,7 @@ function Footer() {
             </div>
           </div>
 
-          {/* Col 2 — Features */}
-          <div className="footer-col">
-            <h4 className="footer-col-title">
-              <span className="footer-title-bar" />
-              Core Features
-            </h4>
-            <ul className="footer-list">
-              <li><span className="footer-list-icon">🌾</span> ML-based Crop Recommendation</li>
-              <li><span className="footer-list-icon">🔬</span> Plant Disease Detection (CNN)</li>
-              <li><span className="footer-list-icon">🌤️</span> 5-Day Weather Forecasting</li>
-              <li><span className="footer-list-icon">🛰️</span> Farm Monitor (Satellite)</li>
-              <li><span className="footer-list-icon">🤖</span> AgroBot AI Assistant</li>
-            </ul>
-          </div>
-
-          {/* Col 3 — Contact */}
+          {/* Col 2 — Contact & Quick Links (shifted to middle) */}
           <div className="footer-col">
             <h4 className="footer-col-title">
               <span className="footer-title-bar" />
@@ -81,7 +66,7 @@ function Footer() {
               <li>
                 <span className="footer-list-icon">📧</span>
                 <a href="mailto:nirnayawasthi2003@gmail.com" className="footer-link">
-                  nirnayawasthi2003@gmail.com
+                  agroguardianadmin@gmail.com
                 </a>
               </li>
               <li><span className="footer-list-icon">📞</span> +91 9125999412</li>
@@ -97,6 +82,42 @@ function Footer() {
               <li><span className="footer-list-icon">ℹ️</span> About Us</li>
               <li><span className="footer-list-icon">🌾</span> Crop Recommendation</li>
             </ul>
+          </div>
+
+          {/* Col 3 — Get in Touch (right side) */}
+          <div className="footer-col footer-contact-form-col">
+            <h4 className="footer-col-title">
+              <span className="footer-title-bar" />
+              Get in Touch
+            </h4>
+            <p className="footer-tagline" style={{ marginBottom: "14px" }}>
+              Send us a message and we'll get back to you.
+            </p>
+            <div className="footer-contact-form">
+              <input
+                type="text"
+                className="footer-input"
+                placeholder="Your Subject"
+              />
+              <textarea
+                className="footer-textarea"
+                placeholder="Your message..."
+                rows={4}
+              />
+              <a
+                href="mailto:nirnayawasthi2003@gmail.com?subject=AgroGuardian%20Inquiry"
+                className="footer-send-btn"
+                onClick={(e) => {
+                  const subjectEl = e.currentTarget.closest('.footer-contact-form').querySelector('.footer-input');
+                  const msgEl = e.currentTarget.closest('.footer-contact-form').querySelector('.footer-textarea');
+                  const subject = encodeURIComponent(subjectEl.value || 'AgroGuardian Inquiry');
+                  const body = encodeURIComponent(msgEl.value || '');
+                  e.currentTarget.href = `mailto:nirnayawasthi2003@gmail.com?subject=${subject}&body=${body}`;
+                }}
+              >
+                Send Message →
+              </a>
+            </div>
           </div>
 
         </div>
